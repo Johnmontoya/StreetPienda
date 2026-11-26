@@ -35,13 +35,13 @@ func _draw() -> void:
 
 	draw_rect(Rect2(0, 477, 960, 63), INK)
 	draw_line(Vector2(0, 477), Vector2(960, 477), Color("#65516a"), 1)
-	_label("MARA", Rect2(44, 500, 50, 0), 14, first.accent)
+	_label("J1", Rect2(44, 500, 50, 0), 14, first.accent)
 	_label("A D  Mover   W  Saltar   S  Cubrir   F G  Atacar", Rect2(104, 500, 410, 0), 13, WHITE)
 	if arena.local_multiplayer:
-		_label("NICO", Rect2(508, 500, 50, 0), 14, second.accent)
+		_label("J2", Rect2(508, 500, 50, 0), 14, second.accent)
 		_label("← →  Mover   ↑  Saltar   ↓  Cubrir   K L  Atacar", Rect2(563, 500, 380, 0), 13, WHITE)
 	else:
-		_label("NICO  /  CPU", Rect2(660, 500, 256, 0), 14, second.accent, HORIZONTAL_ALIGNMENT_RIGHT)
+		_label("%s  /  CPU" % second.fighter_name, Rect2(660, 500, 256, 0), 14, second.accent, HORIZONTAL_ALIGNMENT_RIGHT)
 	_label("F1  Contra CPU     F2  Duelo local     Esc  Pausa     R  Reiniciar", Rect2(44, 524, 872, 0), 13, MUTED)
 
 	if arena.spark_time > 0.0:
@@ -59,9 +59,9 @@ func _draw() -> void:
 			_banner(arena.result, "Siguiente ronda")
 		Arena.Phase.MATCH_END:
 			if arena.mode == Arena.Mode.STORY and arena.first_wins == Arena.ROUNDS_TO_WIN:
-				_banner("Historia completada", "Mara gana el duelo  ·  R para repetirlo")
+				_banner("Historia completada", "%s el duelo  ·  R para repetirlo" % arena.result)
 			elif arena.mode == Arena.Mode.STORY:
-				_banner("Nico gana el duelo", "R para reintentar")
+				_banner(arena.result + " el duelo", "R para reintentar")
 			else:
 				_banner(arena.result + " el duelo", "R para volver a jugar")
 

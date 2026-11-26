@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_menu"]
 [ext_resource type="Script" path="res://scripts/stage.gd" id="2_stage"]
-[ext_resource type="Script" path="res://scripts/fighter.gd" id="3_fighter"]
 [ext_resource type="Theme" path="res://scenes/menu_theme.tres" id="4_theme"]
+[ext_resource type="PackedScene" path="res://scenes/characters/mara.tscn" id="5_mara"]
+[ext_resource type="PackedScene" path="res://scenes/characters/nico.tscn" id="6_nico"]
 
 [sub_resource type="Gradient" id="DarkGradient"]
 offsets = PackedFloat32Array(0, 0.4, 0.68, 1)
@@ -29,19 +30,22 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("4_theme")
 script = ExtResource("1_menu")
+story_player = ExtResource("5_mara")
+story_rival = ExtResource("6_nico")
 
 [node name="Illustration" type="Node2D" parent="."]
 
 [node name="Stage" type="Node2D" parent="Illustration"]
 script = ExtResource("2_stage")
 
-[node name="Mara" type="Node2D" parent="Illustration"]
+[node name="Mara" parent="Illustration" instance=ExtResource("5_mara")]
+position = Vector2(607, 447)
 scale = Vector2(1.84, 1.84)
-script = ExtResource("3_fighter")
 
-[node name="Nico" type="Node2D" parent="Illustration"]
+[node name="Nico" parent="Illustration" instance=ExtResource("6_nico")]
+position = Vector2(818, 447)
 scale = Vector2(1.84, 1.84)
-script = ExtResource("3_fighter")
+face = -1.0
 
 [node name="Backdrop" type="TextureRect" parent="."]
 layout_mode = 1

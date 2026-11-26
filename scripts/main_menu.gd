@@ -1,8 +1,10 @@
 extends Control
 
 const Arena := preload("res://scripts/arena.gd")
-const Fighter := preload("res://scripts/fighter.gd")
 const ARENA_SCENE := preload("res://scenes/arena.tscn")
+
+@export var story_player: PackedScene
+@export var story_rival: PackedScene
 
 @onready var modes: VBoxContainer = $Modes
 @onready var story: VBoxContainer = $Story
@@ -11,10 +13,6 @@ const ARENA_SCENE := preload("res://scenes/arena.tscn")
 @onready var navigation_hint: Label = $NavigationHint
 
 func _ready() -> void:
-	$Illustration/Mara.configure(Fighter.Character.MARA)
-	$Illustration/Mara.reset_at(607.0, 447.0, 1.0)
-	$Illustration/Nico.configure(Fighter.Character.NICO)
-	$Illustration/Nico.reset_at(818.0, 447.0, -1.0)
 	story_button.pressed.connect(_show_story)
 	$Modes/CpuButton.pressed.connect(_start.bind(Arena.Mode.CPU))
 	$Modes/LocalButton.pressed.connect(_start.bind(Arena.Mode.LOCAL))
@@ -42,6 +40,9 @@ func _show_modes() -> void:
 func _start(mode: Arena.Mode) -> void:
 	var arena: Arena = ARENA_SCENE.instantiate()
 	arena.mode = mode
+	if mode == Arena.Mode.STORY:
+		arena.first_character = story_player
+		arena.second_character = story_rival
 	var error := get_tree().change_scene_to_node(arena)
 	if error != OK:
 		arena.free()

@@ -20,9 +20,11 @@ const CONTROLS := {
 }
 
 @export var mode := Mode.CPU
+@export var first_character: PackedScene
+@export var second_character: PackedScene
 
-var first := Fighter.new()
-var second := Fighter.new()
+var first: Fighter
+var second: Fighter
 var phase := Phase.INTRO
 var round_number := 1
 var first_wins := 0
@@ -49,13 +51,26 @@ func _ready() -> void:
 		event.physical_keycode = CONTROLS[action]
 		InputMap.add_action(action)
 		InputMap.action_add_event(action, event)
-	$Overlay/HUD.arena = self
 	$Overlay/HUD/MenuButton.pressed.connect(return_to_menu)
-	first.configure(Fighter.Character.MARA)
-	second.configure(Fighter.Character.NICO)
-	add_child(first)
-	add_child(second)
+	first = _spawn_fighter(first_character)
+	second = _spawn_fighter(second_character)
+	if first == null or second == null:
+		set_physics_process(false)
+		return
+	$Overlay/HUD.arena = self
 	_new_match(mode)
+
+func _spawn_fighter(character_scene: PackedScene) -> Fighter:
+	if character_scene == null or not character_scene.can_instantiate():
+		push_error("Asigna una escena de luchador para cada puesto de la arena.")
+		return null
+	var character := character_scene.instantiate()
+	if character is Fighter:
+		add_child(character)
+		return character
+	push_error("La raíz de %s debe usar fighter.gd." % character_scene.resource_path)
+	character.free()
+	return null
 
 func _new_match(next_mode: Mode) -> void:
 	mode = next_mode

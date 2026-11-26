@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/fighter.gd" id="1_fighter"]
+[ext_resource type="Texture2D" path="res://assets/characters/nico.png" id="2_sprites"]
+[ext_resource type="AnimationLibrary" path="res://scenes/characters/fighter_animations.tres" id="3_animations"]
+
+[node name="Nico" type="Node2D"]
+script = ExtResource("1_fighter")
+fighter_name = "NICO"
+accent = Color(1, 0.470588, 0.360784, 1)
+
+[node name="Visual" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Visual"]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_sprites")
+centered = false
+offset = Vector2(-106, -264)
+hframes = 8
+vframes = 8
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+callback_mode_process = 2
+libraries = {
+&"": ExtResource("3_animations")
+}

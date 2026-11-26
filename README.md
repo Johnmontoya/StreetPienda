@@ -31,3 +31,10 @@ Gana quien consiga dos rondas. Si se agotan los 45 segundos de una ronda, gana q
 | Patada → puñetazo → patada | G → F → G | L → K → L |
 
 Pulsa cada tecla por separado y rápido, apenas salga el golpe anterior. La cadena avanza si ambos luchadores están en el suelo y el golpe conecta. Un bloqueo o un golpe fallido corta la cadena. El contador aparece desde el segundo impacto consecutivo. La CPU también puede encadenar golpes.
+
+## Agregar un personaje
+
+1. Duplica una escena de `scenes/characters/`. La raíz usa `fighter.gd` y permite editar el nombre, el color del HUD y las velocidades de movimiento y salto desde el Inspector.
+2. Asigna la hoja de sprites en `Visual/Sprite2D`. Ajusta la cuadrícula y el origen para que los pies queden sobre el suelo y el personaje mire hacia la derecha.
+3. Si el personaje necesita otros fotogramas o tiempos, duplica `fighter_animations.tres` y asigna la copia a su `AnimationPlayer`. Conserva los nombres `idle`, `walk`, `jump`, `guard`, `hurt`, `punch`, `kick`, `cross` y `finisher`. Los tiempos de impacto están definidos en `scripts/fighter.gd`.
+4. Abre `scenes/arena.tscn` y asigna la nueva escena a **First Character** o **Second Character** para probarla en VS CPU o Multijugador. Historia usa **Story Player** y **Story Rival** en `scenes/main_menu.tscn`.
