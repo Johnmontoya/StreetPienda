@@ -18,6 +18,8 @@ const FOLLOW_UPS := {
 const CANCEL_GRACE := 0.04
 const COMBO_DISPLAY_TIME := 1.1
 
+enum Character { MARA, NICO }
+
 var fighter_name := ""
 var accent := Color.WHITE
 var dark := Color.WHITE
@@ -39,6 +41,19 @@ var knockback := 0.0
 var hits_taken := 0
 var combo_hits := 0
 var combo_display_left := 0.0
+
+func configure(character: Character) -> void:
+	match character:
+		Character.MARA:
+			fighter_name = "MARA"
+			accent = Color("#53f1d4")
+			dark = Color("#255c72")
+			skin = Color("#f8b58d")
+		Character.NICO:
+			fighter_name = "NICO"
+			accent = Color("#ff785c")
+			dark = Color("#773454")
+			skin = Color("#b9735c")
 
 func reset_at(x: float, floor_y: float, direction: float) -> void:
 	position = Vector2(x, floor_y)

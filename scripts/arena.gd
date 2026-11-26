@@ -8,6 +8,7 @@ const BODY_WIDTH := 54.0
 const BOUNDS := Vector2(61.0, 899.0)
 
 enum Phase { INTRO, FIGHT, ROUND_END, MATCH_END }
+enum Mode { CPU, LOCAL, STORY }
 
 const CONTROLS := {
 	"p1_left": KEY_A, "p1_right": KEY_D, "p1_jump": KEY_W,
@@ -15,7 +16,10 @@ const CONTROLS := {
 	"p2_left": KEY_LEFT, "p2_right": KEY_RIGHT, "p2_jump": KEY_UP,
 	"p2_guard": KEY_DOWN, "p2_punch": KEY_K, "p2_kick": KEY_L,
 	"mode_cpu": KEY_F1, "mode_local": KEY_F2, "restart": KEY_R, "pause_match": KEY_ESCAPE,
+	"return_to_menu": KEY_M,
 }
+
+@export var mode := Mode.CPU
 
 var first := Fighter.new()
 var second := Fighter.new()
@@ -26,7 +30,9 @@ var second_wins := 0
 var time_left := ROUND_TIME
 var phase_left := 0.0
 var paused := false
-var local_multiplayer := false
+var local_multiplayer: bool:
+	get:
+		return mode == Mode.LOCAL
 var result := ""
 var spark_time := 0.0
 var spark_position := Vector2.ZERO
@@ -44,25 +50,25 @@ func _ready() -> void:
 		InputMap.add_action(action)
 		InputMap.action_add_event(action, event)
 	$Overlay/HUD.arena = self
-	first.fighter_name = "MARA"
-	first.accent = Color("#53f1d4")
-	first.dark = Color("#255c72")
-	first.skin = Color("#f8b58d")
-	second.fighter_name = "NICO"
-	second.accent = Color("#ff785c")
-	second.dark = Color("#773454")
-	second.skin = Color("#b9735c")
+	$Overlay/HUD/MenuButton.pressed.connect(return_to_menu)
+	first.configure(Fighter.Character.MARA)
+	second.configure(Fighter.Character.NICO)
 	add_child(first)
 	add_child(second)
-	_new_match(false)
+	_new_match(mode)
 
-func _new_match(local: bool) -> void:
-	local_multiplayer = local
+func _new_match(next_mode: Mode) -> void:
+	mode = next_mode
 	first_wins = 0
 	second_wins = 0
 	round_number = 1
 	paused = false
 	_new_round()
+
+func return_to_menu() -> void:
+	var error := get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+	if error != OK:
+		push_error("No se pudo abrir el menú principal: %s" % error_string(error))
 
 func _new_round() -> void:
 	first.reset_at(305.0, FLOOR_Y, 1.0)
@@ -76,12 +82,15 @@ func _new_round() -> void:
 	result = ""
 
 func _physics_process(delta: float) -> void:
-	if Input.is_action_just_pressed("mode_cpu"):
-		_new_match(false)
+	if Input.is_action_just_pressed("return_to_menu"):
+		return_to_menu()
+		return
+	elif Input.is_action_just_pressed("mode_cpu"):
+		_new_match(Mode.CPU)
 	elif Input.is_action_just_pressed("mode_local"):
-		_new_match(true)
+		_new_match(Mode.LOCAL)
 	elif Input.is_action_just_pressed("restart"):
-		_new_match(local_multiplayer)
+		_new_match(mode)
 	elif Input.is_action_just_pressed("pause_match"):
 		paused = not paused
 

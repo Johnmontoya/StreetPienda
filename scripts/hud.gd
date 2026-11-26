@@ -58,7 +58,12 @@ func _draw() -> void:
 		Arena.Phase.ROUND_END:
 			_banner(arena.result, "Siguiente ronda")
 		Arena.Phase.MATCH_END:
-			_banner(arena.result + " el duelo", "R para volver a jugar")
+			if arena.mode == Arena.Mode.STORY and arena.first_wins == Arena.ROUNDS_TO_WIN:
+				_banner("Historia completada", "Mara gana el duelo  ·  R para repetirlo")
+			elif arena.mode == Arena.Mode.STORY:
+				_banner("Nico gana el duelo", "R para reintentar")
+			else:
+				_banner(arena.result + " el duelo", "R para volver a jugar")
 
 func _health_bar(rect: Rect2, health: int, tint: Color, reverse: bool) -> void:
 	draw_rect(rect, Color("#544155"))
@@ -71,7 +76,7 @@ func _health_bar(rect: Rect2, health: int, tint: Color, reverse: bool) -> void:
 		draw_line(fill.position, Vector2(fill.end.x, fill.position.y), tint.lightened(0.4), 2)
 
 func _round_marker(center: Vector2, filled: bool, tint: Color) -> void:
-	draw_circle(center, 4.0, tint if filled else Color("#806a81"), filled, 1.2, true)
+	draw_circle(center, 4.0, tint if filled else Color("#806a81"), filled, -1.0 if filled else 1.2, true)
 
 func _combo(top_left: Vector2, hit_count: int, tint: Color) -> void:
 	draw_rect(Rect2(top_left, Vector2(121, 36)), INK)

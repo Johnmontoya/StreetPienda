@@ -1,0 +1,173 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_menu"]
+[ext_resource type="Script" path="res://scripts/stage.gd" id="2_stage"]
+[ext_resource type="Script" path="res://scripts/fighter.gd" id="3_fighter"]
+[ext_resource type="Theme" path="res://scenes/menu_theme.tres" id="4_theme"]
+
+[sub_resource type="Gradient" id="DarkGradient"]
+offsets = PackedFloat32Array(0, 0.4, 0.68, 1)
+colors = PackedColorArray(0.045, 0.04, 0.09, 1, 0.055, 0.045, 0.1, 0.98, 0.08, 0.05, 0.12, 0.26, 0.08, 0.05, 0.12, 0.08)
+
+[sub_resource type="GradientTexture2D" id="Backdrop"]
+gradient = SubResource("DarkGradient")
+width = 960
+height = 2
+fill_from = Vector2(0, 0)
+fill_to = Vector2(1, 0)
+
+[sub_resource type="FontVariation" id="TitleFont"]
+variation_embolden = 1.75
+variation_transform = Transform2D(1, 0, -0.15, 1, 0, 0)
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("4_theme")
+script = ExtResource("1_menu")
+
+[node name="Illustration" type="Node2D" parent="."]
+
+[node name="Stage" type="Node2D" parent="Illustration"]
+script = ExtResource("2_stage")
+
+[node name="Mara" type="Node2D" parent="Illustration"]
+scale = Vector2(1.84, 1.84)
+script = ExtResource("3_fighter")
+
+[node name="Nico" type="Node2D" parent="Illustration"]
+scale = Vector2(1.84, 1.84)
+script = ExtResource("3_fighter")
+
+[node name="Backdrop" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("Backdrop")
+expand_mode = 1
+
+[node name="TitleStreet" type="Label" parent="."]
+layout_mode = 0
+offset_left = 54.0
+offset_top = 46.0
+offset_right = 444.0
+offset_bottom = 133.0
+theme_override_colors/font_color = Color(1, 0.94, 0.9, 1)
+theme_override_fonts/font = SubResource("TitleFont")
+theme_override_font_sizes/font_size = 72
+text = "STREET"
+
+[node name="TitlePienda" type="Label" parent="."]
+layout_mode = 0
+offset_left = 54.0
+offset_top = 112.0
+offset_right = 444.0
+offset_bottom = 201.0
+theme_override_colors/font_color = Color(1, 0.47, 0.36, 1)
+theme_override_fonts/font = SubResource("TitleFont")
+theme_override_font_sizes/font_size = 72
+text = "PIENDA"
+
+[node name="TitleUnderline" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 215.0
+offset_right = 119.0
+offset_bottom = 218.0
+mouse_filter = 2
+color = Color(0.32, 0.94, 0.83, 1)
+
+[node name="Modes" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 249.0
+offset_right = 356.0
+offset_bottom = 428.0
+theme_override_constants/separation = 11
+
+[node name="StoryButton" type="Button" parent="Modes"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+focus_neighbor_top = NodePath("../LocalButton")
+focus_neighbor_bottom = NodePath("../CpuButton")
+text = "Historia"
+alignment = 0
+
+[node name="CpuButton" type="Button" parent="Modes"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+focus_neighbor_top = NodePath("../StoryButton")
+focus_neighbor_bottom = NodePath("../LocalButton")
+text = "VS CPU"
+alignment = 0
+
+[node name="LocalButton" type="Button" parent="Modes"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+focus_neighbor_top = NodePath("../CpuButton")
+focus_neighbor_bottom = NodePath("../StoryButton")
+text = "Multijugador"
+alignment = 0
+tooltip_text = "Dos jugadores en el mismo teclado"
+
+[node name="Story" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 60.0
+offset_top = 237.0
+offset_right = 390.0
+offset_bottom = 462.0
+theme_override_constants/separation = 10
+
+[node name="Chapter" type="Label" parent="Story"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.67, 0.55, 1)
+theme_override_fonts/font = SubResource("TitleFont")
+theme_override_font_sizes/font_size = 25
+text = "La primera noche"
+
+[node name="Premise" type="Label" parent="Story"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.87, 0.9, 1)
+theme_override_font_sizes/font_size = 17
+text = "Mara llega a la Calle Pienda. Para ganarse un lugar en el barrio, debe vencer a Nico en un duelo."
+autowrap_mode = 3
+
+[node name="FightButton" type="Button" parent="Story"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+focus_neighbor_top = NodePath("../BackButton")
+focus_neighbor_bottom = NodePath("../BackButton")
+text = "Pelear"
+alignment = 0
+
+[node name="BackButton" type="Button" parent="Story"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+focus_neighbor_top = NodePath("../FightButton")
+focus_neighbor_bottom = NodePath("../FightButton")
+text = "Volver"
+alignment = 0
+
+[node name="NavigationHint" type="Label" parent="."]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 480.0
+offset_right = 466.0
+offset_bottom = 509.0
+theme_override_colors/font_color = Color(0.78, 0.72, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+vertical_alignment = 1

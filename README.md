@@ -4,7 +4,11 @@ Juego de peleas 2D para Godot 4.7.2 estable, con dos luchadores y una arena urba
 
 ## Jugar
 
-Importa `project.godot` en Godot y pulsa **F6** con `scenes/arena.tscn` abierta, o **F5** para ejecutar el proyecto.
+Importa `project.godot` en Godot y pulsa **F5** para abrir el menú. Puedes elegir con el ratón o con **↑ / ↓** y **Enter**.
+
+- **Historia** abre *La primera noche*, el primer capítulo de Mara, con un duelo contra Nico.
+- **VS CPU** inicia un duelo libre contra Nico.
+- **Multijugador** inicia un duelo local para dos personas en el mismo teclado.
 
 | Acción | Mara | Nico en duelo local |
 | --- | --- | --- |
@@ -14,7 +18,7 @@ Importa `project.godot` en Godot y pulsa **F6** con `scenes/arena.tscn` abierta,
 | Puñetazo | F | K |
 | Patada | G | L |
 
-**F1** inicia un duelo contra la CPU y **F2** inicia un duelo local. **Esc** pausa o reanuda el combate y **R** reinicia el duelo en el modo actual.
+En la arena, **Esc** pausa o reanuda el combate, **R** reinicia el duelo y **M** o el botón **Menú** te devuelven a la pantalla principal. Desde la arena, **F1** cambia a VS CPU y **F2** cambia a multijugador.
 
 Gana quien consiga dos rondas. Si se agotan los 45 segundos de una ronda, gana quien conserve más salud. Si ambos terminan con la misma salud, ninguno suma un punto.
 

@@ -1,9 +1,10 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/arena.gd" id="1_arena"]
 [ext_resource type="Script" path="res://scripts/hud.gd" id="2_hud"]
 
 [ext_resource type="Script" path="res://scripts/stage.gd" id="3_stage"]
+[ext_resource type="Theme" path="res://scenes/menu_theme.tres" id="4_theme"]
 
 [node name="Arena" type="Node2D"]
 script = ExtResource("1_arena")
@@ -15,3 +16,14 @@ script = ExtResource("3_stage")
 
 [node name="HUD" type="Node2D" parent="Overlay"]
 script = ExtResource("2_hud")
+
+[node name="MenuButton" type="Button" parent="Overlay/HUD"]
+offset_left = 803.0
+offset_top = 506.0
+offset_right = 916.0
+offset_bottom = 534.0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_theme")
+theme_override_font_sizes/font_size = 13
+text = "Menú  ·  M"
