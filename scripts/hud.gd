@@ -28,6 +28,10 @@ func _draw() -> void:
 		_round_marker(Vector2(890 - index * 15, 88), index < arena.second_wins, second.accent)
 	_label("%02d" % ceili(arena.time_left), Rect2(443, 64, 74, 0), 30, WHITE, HORIZONTAL_ALIGNMENT_CENTER)
 	_label("RONDA %d" % arena.round_number, Rect2(443, 86, 74, 0), 12, GOLD, HORIZONTAL_ALIGNMENT_CENTER)
+	if first.combo_display_left > 0.0:
+		_combo(Vector2(47, 111), first.combo_hits, first.accent)
+	if second.combo_display_left > 0.0:
+		_combo(Vector2(792, 111), second.combo_hits, second.accent)
 
 	draw_rect(Rect2(0, 477, 960, 63), INK)
 	draw_line(Vector2(0, 477), Vector2(960, 477), Color("#65516a"), 1)
@@ -68,6 +72,11 @@ func _health_bar(rect: Rect2, health: int, tint: Color, reverse: bool) -> void:
 
 func _round_marker(center: Vector2, filled: bool, tint: Color) -> void:
 	draw_circle(center, 4.0, tint if filled else Color("#806a81"), filled, 1.2, true)
+
+func _combo(top_left: Vector2, hit_count: int, tint: Color) -> void:
+	draw_rect(Rect2(top_left, Vector2(121, 36)), INK)
+	draw_rect(Rect2(top_left, Vector2(121, 2)), tint)
+	_label("%d GOLPES" % hit_count, Rect2(top_left + Vector2(0, 25), Vector2(121, 0)), 18, tint, HORIZONTAL_ALIGNMENT_CENTER)
 
 func _draw_spark() -> void:
 	var progress := 1.0 - arena.spark_time / 0.19

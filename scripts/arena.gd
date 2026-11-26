@@ -89,6 +89,8 @@ func _physics_process(delta: float) -> void:
 	if paused:
 		return
 	spark_time = maxf(0.0, spark_time - delta)
+	first.combo_display_left = maxf(0.0, first.combo_display_left - delta)
+	second.combo_display_left = maxf(0.0, second.combo_display_left - delta)
 	if phase == Phase.MATCH_END:
 		return
 
@@ -117,14 +119,23 @@ func _play_frame(delta: float) -> void:
 	var first_contact := first.contact_with(second)
 	var second_contact := second.contact_with(first)
 	if not first_contact.is_empty():
-		second.receive(first_contact)
-		_show_contact(second, first_contact["blocked"])
+		_resolve_contact(first, second, first_contact)
 	if not second_contact.is_empty():
-		first.receive(second_contact)
-		_show_contact(first, second_contact["blocked"])
+		_resolve_contact(second, first, second_contact)
 	time_left = maxf(0.0, time_left - delta)
 	if first.health == 0 or second.health == 0 or time_left <= 0.0:
 		_end_round()
+
+func _resolve_contact(attacker: Fighter, target: Fighter, contact: Dictionary) -> void:
+	var hit_count := target.receive(contact)
+	if hit_count > 1:
+		attacker.combo_hits = hit_count
+		attacker.combo_display_left = Fighter.COMBO_DISPLAY_TIME
+	_show_contact(target, contact["blocked"])
+	if not local_multiplayer and attacker == second and attacker.hit_confirmed:
+		var follow_ups: Dictionary = Fighter.FOLLOW_UPS.get(attacker.stance, {})
+		if not follow_ups.is_empty() and rng.randf() < 0.45:
+			attacker.buffer_follow_up(follow_ups.keys()[rng.randi_range(0, follow_ups.size() - 1)])
 
 func _read_player(fighter: Fighter, prefix: String, delta: float, rival_x: float) -> void:
 	var strike := &""
