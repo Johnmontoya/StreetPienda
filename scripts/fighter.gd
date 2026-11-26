@@ -1,5 +1,7 @@
 extends Node2D
 
+const AbilityMachine := preload("res://scripts/abilities/ability_machine.gd")
+
 const MAX_HEALTH := 100
 const GRAVITY := 1500.0
 const ATTACKS := {
@@ -24,6 +26,7 @@ const COMBO_DISPLAY_TIME := 1.1
 
 @onready var visual: Node2D = $Visual
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var ability: AbilityMachine = get_node_or_null("Ability")
 
 var health := MAX_HEALTH
 var elevation := 0.0
@@ -37,14 +40,20 @@ var hit_confirmed := false
 var queued_attack := &""
 var stun_left := 0.0
 var knockback := 0.0
+var block_reaction_scale := 1.0
 var hits_taken := 0
 var combo_hits := 0
 var combo_display_left := 0.0
 
 func _ready() -> void:
+	if ability != null:
+		ability.initialize(self)
+		ability.set_active(true)
 	_update_visual(0.0)
 
 func reset_at(x: float, floor_y: float, direction: float) -> void:
+	if ability != null:
+		ability.reset()
 	position = Vector2(x, floor_y)
 	face = direction
 	health = MAX_HEALTH
@@ -57,6 +66,7 @@ func reset_at(x: float, floor_y: float, direction: float) -> void:
 	_clear_attack()
 	stun_left = 0.0
 	knockback = 0.0
+	block_reaction_scale = 1.0
 	hits_taken = 0
 	combo_hits = 0
 	combo_display_left = 0.0
@@ -64,8 +74,16 @@ func reset_at(x: float, floor_y: float, direction: float) -> void:
 	animation_player.play(&"idle")
 	_update_visual(0.0)
 
-func step(delta: float, axis: float, jump: bool, guard: bool, strike: StringName, rival_x: float) -> void:
+func step(delta: float, axis: float, jump: bool, guard: bool, strike: StringName, rival_x: float, special := false) -> void:
 	movement = 0.0
+	if ability != null:
+		if special and ability.is_available() and grounded and stun_left <= 0.0 and not ATTACKS.has(stance):
+			_face_rival(rival_x)
+			stance = &"idle"
+			ability.dispatch(AbilityMachine.ACTIVATE)
+		if ability.advance_ability(delta):
+			_update_visual(delta)
+			return
 	if ATTACKS.has(stance):
 		_step_attack(delta, strike)
 	elif stun_left > 0.0:
@@ -73,8 +91,7 @@ func step(delta: float, axis: float, jump: bool, guard: bool, strike: StringName
 		position.x += knockback * delta
 		knockback = move_toward(knockback, 0.0, delta * 900.0)
 	else:
-		if absf(rival_x - position.x) > 1.0:
-			face = signf(rival_x - position.x)
+		_face_rival(rival_x)
 		stance = &"idle"
 		if grounded and guard:
 			stance = &"guard"
@@ -95,6 +112,10 @@ func step(delta: float, axis: float, jump: bool, guard: bool, strike: StringName
 			vertical_speed = 0.0
 			grounded = true
 	_update_visual(delta)
+
+func _face_rival(rival_x: float) -> void:
+	if absf(rival_x - position.x) > 1.0:
+		face = signf(rival_x - position.x)
 
 func _step_attack(delta: float, strike: StringName) -> void:
 	var move: Dictionary = ATTACKS[stance]
@@ -156,9 +177,11 @@ func receive(contact: Dictionary) -> int:
 		var continuing := stance == &"hurt" and stun_left > 0.0
 		hits_taken = hits_taken + 1 if continuing else 1
 		health = maxi(0, health - int(move["damage"]))
+		if ability != null:
+			ability.interrupt()
 	stance = &"guard" if blocked else &"hurt"
-	stun_left = 0.15 if blocked else float(move["stun"])
-	knockback = float(contact["direction"]) * (105.0 if blocked else 220.0)
+	stun_left = 0.15 * block_reaction_scale if blocked else float(move["stun"])
+	knockback = float(contact["direction"]) * (105.0 * block_reaction_scale if blocked else 220.0)
 	_clear_attack()
 	_update_visual(0.0)
 	return hits_taken
@@ -185,3 +208,6 @@ func _draw() -> void:
 	var shadow_scale := 1.0 - clampf(elevation / 160.0, 0.0, 0.55)
 	draw_set_transform(Vector2(0, 4), 0.0, Vector2(shadow_scale, 0.24 * shadow_scale))
 	draw_circle(Vector2.ZERO, 45, Color(0.02, 0.02, 0.08, 0.48))
+	if ability != null and ability.is_using_ability():
+		draw_circle(Vector2.ZERO, 42, Color(accent, 0.25))
+		draw_circle(Vector2.ZERO, 42, accent, false, 3.0, true)

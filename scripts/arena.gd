@@ -13,8 +13,10 @@ enum Mode { CPU, LOCAL, STORY }
 const CONTROLS := {
 	"p1_left": KEY_A, "p1_right": KEY_D, "p1_jump": KEY_W,
 	"p1_guard": KEY_S, "p1_punch": KEY_F, "p1_kick": KEY_G,
+	"p1_special": KEY_H,
 	"p2_left": KEY_LEFT, "p2_right": KEY_RIGHT, "p2_jump": KEY_UP,
 	"p2_guard": KEY_DOWN, "p2_punch": KEY_K, "p2_kick": KEY_L,
+	"p2_special": KEY_O,
 	"mode_cpu": KEY_F1, "mode_local": KEY_F2, "restart": KEY_R, "pause_match": KEY_ESCAPE,
 	"return_to_menu": KEY_M,
 }
@@ -170,7 +172,8 @@ func _read_player(fighter: Fighter, prefix: String, delta: float, rival_x: float
 	fighter.step(
 		delta, Input.get_axis(prefix + "left", prefix + "right"),
 		Input.is_action_just_pressed(prefix + "jump"),
-		Input.is_action_pressed(prefix + "guard"), strike, rival_x
+		Input.is_action_pressed(prefix + "guard"), strike, rival_x,
+		Input.is_action_just_pressed(prefix + "special")
 	)
 
 func _step_cpu(delta: float, rival_x: float) -> void:
@@ -179,17 +182,20 @@ func _step_cpu(delta: float, rival_x: float) -> void:
 	var axis := signf(offset) if distance > 83.0 else 0.0
 	var strike := &""
 	var jump := false
+	var special := false
 	cpu_wait -= delta
 	cpu_guard = maxf(0.0, cpu_guard - delta)
 	if cpu_wait <= 0.0 and second.stance in [&"idle", &"guard"] and second.stun_left <= 0.0:
 		cpu_wait = rng.randf_range(0.19, 0.46)
-		if distance < 146.0 and Fighter.ATTACKS.has(first.stance) and rng.randf() < 0.62:
+		if second.grounded and second.ability != null and second.ability.should_use(first, distance):
+			special = true
+		elif distance < 146.0 and Fighter.ATTACKS.has(first.stance) and rng.randf() < 0.62:
 			cpu_guard = rng.randf_range(0.19, 0.38)
 		elif distance <= 124.0:
 			strike = &"punch" if distance < 90.0 and rng.randf() < 0.7 else &"kick"
 		elif distance < 215.0 and rng.randf() < 0.16:
 			jump = true
-	second.step(delta, axis, jump, cpu_guard > 0.0, strike, rival_x)
+	second.step(delta, axis, jump, cpu_guard > 0.0, strike, rival_x, special)
 
 func _separate(first_was_left: bool) -> void:
 	first.position.x = clampf(first.position.x, BOUNDS.x, BOUNDS.y)

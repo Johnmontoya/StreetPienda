@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/fighter.gd" id="1_fighter"]
 [ext_resource type="Texture2D" path="res://assets/characters/mara.png" id="2_sprites"]
 [ext_resource type="AnimationLibrary" path="res://scenes/characters/fighter_animations.tres" id="3_animations"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_machine.gd" id="4_ability"]
+[ext_resource type="Script" path="res://scripts/abilities/quick_step.gd" id="5_active"]
 
 [node name="Mara" type="Node2D"]
 script = ExtResource("1_fighter")
@@ -24,3 +26,16 @@ callback_mode_process = 2
 libraries = {
 &"": ExtResource("3_animations")
 }
+
+[node name="Ability" type="LimboHSM" parent="."]
+script = ExtResource("4_ability")
+
+[node name="Ready" type="LimboState" parent="Ability"]
+
+[node name="Active" type="LimboState" parent="Ability"]
+script = ExtResource("5_active")
+ability_name = "Paso veloz"
+duration = 0.2
+cooldown = 2.4
+
+[node name="Cooldown" type="LimboState" parent="Ability"]

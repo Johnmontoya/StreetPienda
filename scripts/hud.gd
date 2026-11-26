@@ -1,6 +1,7 @@
 extends Node2D
 
 const Arena := preload("res://scripts/arena.gd")
+const Fighter := preload("res://scripts/fighter.gd")
 const INK := Color("#17172b")
 const WHITE := Color("#fff1e9")
 const MUTED := Color("#c7bdd2")
@@ -26,6 +27,8 @@ func _draw() -> void:
 	for index in range(Arena.ROUNDS_TO_WIN):
 		_round_marker(Vector2(70 + index * 15, 88), index < arena.first_wins, first.accent)
 		_round_marker(Vector2(890 - index * 15, 88), index < arena.second_wins, second.accent)
+	_ability_status(first, Rect2(104, 92, 315, 0), HORIZONTAL_ALIGNMENT_LEFT)
+	_ability_status(second, Rect2(541, 92, 315, 0), HORIZONTAL_ALIGNMENT_RIGHT)
 	_label("%02d" % ceili(arena.time_left), Rect2(443, 64, 74, 0), 30, WHITE, HORIZONTAL_ALIGNMENT_CENTER)
 	_label("RONDA %d" % arena.round_number, Rect2(443, 86, 74, 0), 12, GOLD, HORIZONTAL_ALIGNMENT_CENTER)
 	if first.combo_display_left > 0.0:
@@ -36,10 +39,16 @@ func _draw() -> void:
 	draw_rect(Rect2(0, 477, 960, 63), INK)
 	draw_line(Vector2(0, 477), Vector2(960, 477), Color("#65516a"), 1)
 	_label("J1", Rect2(44, 500, 50, 0), 14, first.accent)
-	_label("A D  Mover   W  Saltar   S  Cubrir   F G  Atacar", Rect2(104, 500, 410, 0), 13, WHITE)
+	var first_controls := "A D  Mover   W  Saltar   S  Cubrir   F G  Atacar"
+	if first.ability != null:
+		first_controls += "   H  Especial"
+	_label(first_controls, Rect2(82, 500, 420, 0), 13, WHITE)
 	if arena.local_multiplayer:
 		_label("J2", Rect2(508, 500, 50, 0), 14, second.accent)
-		_label("← →  Mover   ↑  Saltar   ↓  Cubrir   K L  Atacar", Rect2(563, 500, 380, 0), 13, WHITE)
+		var second_controls := "← →  Mover   ↑  Saltar   ↓  Cubrir   K L  Atacar"
+		if second.ability != null:
+			second_controls += "   O  Especial"
+		_label(second_controls, Rect2(546, 500, 397, 0), 13, WHITE)
 	else:
 		_label("%s  /  CPU" % second.fighter_name, Rect2(660, 500, 256, 0), 14, second.accent, HORIZONTAL_ALIGNMENT_RIGHT)
 	_label("F1  Contra CPU     F2  Duelo local     Esc  Pausa     R  Reiniciar", Rect2(44, 524, 872, 0), 13, MUTED)
@@ -77,6 +86,19 @@ func _health_bar(rect: Rect2, health: int, tint: Color, reverse: bool) -> void:
 
 func _round_marker(center: Vector2, filled: bool, tint: Color) -> void:
 	draw_circle(center, 4.0, tint if filled else Color("#806a81"), filled, -1.0 if filled else 1.2, true)
+
+func _ability_status(fighter: Fighter, rect: Rect2, alignment: HorizontalAlignment) -> void:
+	var machine := fighter.ability
+	if machine == null:
+		return
+	var status := "Lista"
+	var tint := fighter.accent
+	if machine.is_using_ability():
+		status = "Activa"
+	elif not machine.is_available():
+		status = "%.1f s" % machine.cooldown_left
+		tint = MUTED
+	_label("%s  ·  %s" % [machine.ability_state.ability_name, status], rect, 12, tint, alignment)
 
 func _combo(top_left: Vector2, hit_count: int, tint: Color) -> void:
 	draw_rect(Rect2(top_left, Vector2(121, 36)), INK)
